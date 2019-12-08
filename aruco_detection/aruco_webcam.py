@@ -3,6 +3,7 @@ import numpy as np
 from cv2 import aruco
 import matplotlib.pyplot as plt
 import math
+from time import sleep
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
 
@@ -33,6 +34,16 @@ def distance(x_1, y_1, x_2, y_2):
 # plt.show()
 
 
+class Robot():
+    x, y = None, None
+
+    def __init__(self, id):
+        self.id = id
+
+
+jack = Robot(1)
+enemy = Robot(3)
+
 # VIDEO
 cap = cv2.VideoCapture(0)  # ensure that not on video call
 while True:
@@ -41,12 +52,27 @@ while True:
     parameters = aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
+    sleep(0.1)
+
     if len(corners) >= 2:
-        x_1, y_1 = corners[0][0][0][0], corners[0][0][0][1]
-        x_2, y_2 = corners[1][0][0][0], corners[1][0][0][1]
-        if distance(x_1, y_1, x_2, y_2) < 100:
-            print('Collision!')
+        for i in range(len(ids)):
+            if ids[i] == jack.id:
+                jack.x, jack.y = corners[i][0][:,
+                                               0].mean(), corners[i][0][:, 1].mean()
+            elif ids[i] == enemy.id:
+                enemy.x, enemy.y = corners[i][0][:,
+                                                 0].mean(), corners[i][0][:, 1].mean()
+        if jack.x and enemy.x:
+            if distance(jack.x, jack.y, enemy.x, enemy.y) < 100:
+                print('Collision!')
+            else:
+                print('Detect 2 or more')
+    else:
+        print('Less than 2 codes')
     frame_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    if jack.x:
+        cv2.line(frame_markers, (jack.x, jack.y),
+                 (enemy.x, enemy.y), (0, 0, 255), 3)
     cv2.imshow("Webcam", frame_markers)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
