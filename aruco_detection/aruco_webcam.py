@@ -41,9 +41,6 @@ class Robot():
         self.id = id
 
 
-jack = Robot(1)
-enemy = Robot(3)
-
 # VIDEO
 cap = cv2.VideoCapture(0)  # ensure that not on video call
 while True:
@@ -52,8 +49,12 @@ while True:
     parameters = aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
-    sleep(0.1)
+    # sleep(0.1)
     frame_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    print('Running')
+
+    jack = Robot(1)
+    enemy = Robot(0)
 
     if len(corners) >= 2:
         for i in range(len(ids)):
@@ -71,7 +72,8 @@ while True:
             else:
                 print('Detect 2 or more')
     else:
-        print('Less than 2 codes')
+        # print('Less than 2 codes')
+        pass
     cv2.imshow("Webcam", frame_markers)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
