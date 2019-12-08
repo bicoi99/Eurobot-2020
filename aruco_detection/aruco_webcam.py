@@ -53,6 +53,7 @@ while True:
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
     sleep(0.1)
+    frame_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
 
     if len(corners) >= 2:
         for i in range(len(ids)):
@@ -63,16 +64,14 @@ while True:
                 enemy.x, enemy.y = corners[i][0][:,
                                                  0].mean(), corners[i][0][:, 1].mean()
         if jack.x and enemy.x:
+            cv2.line(frame_markers, (jack.x, jack.y),
+                     (enemy.x, enemy.y), (0, 0, 255), 3)
             if distance(jack.x, jack.y, enemy.x, enemy.y) < 100:
                 print('Collision!')
             else:
                 print('Detect 2 or more')
     else:
         print('Less than 2 codes')
-    frame_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
-    if jack.x:
-        cv2.line(frame_markers, (jack.x, jack.y),
-                 (enemy.x, enemy.y), (0, 0, 255), 3)
     cv2.imshow("Webcam", frame_markers)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
