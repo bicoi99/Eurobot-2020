@@ -8,7 +8,7 @@ import serial
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
 
-s = serial.Serial('com3', 9600)
+s = serial.Serial('/dev/rfcomm3', 9600)
 sleep(2)
 
 
@@ -71,7 +71,7 @@ while True:
         if jack.x and enemy.x:
             cv2.line(frame_markers, (jack.x, jack.y),
                      (enemy.x, enemy.y), (0, 0, 255), 3)
-            if distance(jack.x, jack.y, enemy.x, enemy.y) < 100:
+            if distance(jack.x, jack.y, enemy.x, enemy.y) < 300:
                 print('Collision!')
                 s.write(b'1')
             else:
@@ -80,7 +80,7 @@ while True:
     else:
         # print('Less than 2 codes')
         s.write(b'0')
-    cv2.imshow("Webcam", frame_markers)
+    # cv2.imshow("Webcam", frame_markers)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
