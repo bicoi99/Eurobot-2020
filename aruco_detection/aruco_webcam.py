@@ -5,10 +5,16 @@ import matplotlib.pyplot as plt
 import math
 from time import sleep
 import serial
+import socket
 
 aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
 
-s = serial.Serial('/dev/rfcomm3', 9600)
+Pi_IP = '192.168.137.246'
+Pi_Port = 1234
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+# s = serial.Serial('/dev/rfcomm3', 9600)
 sleep(2)
 
 
@@ -47,13 +53,14 @@ class Robot():
 
 # VIDEO
 cap = cv2.VideoCapture(0)  # ensure that not on video call
+collision_flag = True
 while True:
     ret, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     parameters = aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
-    # sleep(0.1)
+    sleep(0.2)
     frame_markers = aruco.drawDetectedMarkers(img.copy(), corners, ids)
     print('Running')
 
@@ -73,17 +80,29 @@ while True:
                      (enemy.x, enemy.y), (0, 0, 255), 3)
             if distance(jack.x, jack.y, enemy.x, enemy.y) < 300:
                 print('Collision!')
-                s.write(b'1')
+                # s.write(b'1')
+                if not collision_flag:
+                    data = b'1'
+                    sock.sendto(data, (Pi_IP, Pi_Port))
+                collision_flag = True
             else:
                 print('Detect 2 or more')
-                s.write(b'0')
+                # s.write(b'0')
+                if collision_flag:
+                    data = b'0'
+                    sock.sendto(data, (Pi_IP, Pi_Port))
+                collision_flag = False
     else:
         # print('Less than 2 codes')
-        s.write(b'0')
+        # s.write(b'0')
+        if collision_flag:
+            data = b'0'
+            sock.sendto(data, (Pi_IP, Pi_Port))
+        collision_flag = False
     # cv2.imshow("Webcam", frame_markers)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
 cv2.destroyAllWindows()
-s.close()
+# s.close()
