@@ -34,7 +34,7 @@ while True:
     parameters = cv2.aruco.DetectorParameters_create()
     corners, ids, rejectedImgPoints = aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
-    sleep(0.2)
+    # sleep(0.2)
     # frame_marker = cv2.aruco.drawDetectedMarkers(img.copy(), corners, ids)
 
     jack = Robot(1)
