@@ -7,11 +7,13 @@ threshold = 300**2
 
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 
-jack_ip = '192.168.137.205'
+jack_ip = '192.168.137.206'
 jack_port = 1234
 
 rose_ip = '192.168.137.148'
 rose_port = 1235
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
 def logic(x1, y1, x2, y2):
@@ -32,7 +34,7 @@ while True:
     ret, img = cap.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     parameters = cv2.aruco.DetectorParameters_create()
-    corners, ids, rejectedImgPoints = aruco.detectMarkers(
+    corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
     # sleep(0.2)
     # frame_marker = cv2.aruco.drawDetectedMarkers(img.copy(), corners, ids)
@@ -68,7 +70,7 @@ while True:
         # s.write(b'0')
         if collision_flag:
             data = b'0'
-            sock.sendto(data, (Pi_IP, Pi_Port))
+            sock.sendto(data, (jack_ip, jack_port))
         collision_flag = False
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

@@ -5,7 +5,7 @@ rose_ip = '192.168.137.148'
 rose_port = 1235
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((jack_ip, jack_port))
+sock.bind((rose_ip, rose_port))
 
 s = serial.Serial('/dev/ttyS0', 9600)
 
