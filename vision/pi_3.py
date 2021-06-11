@@ -43,7 +43,7 @@ while True:
     rose = Robot(2)
     enemy = Robot(0)
 
-    if len(corners) > 2:
+    if len(corners) >= 2:
         for i in range(len(ids)):
             if ids[i] == jack.id:
                 jack.x, jack.y = corners[i][0][:,
