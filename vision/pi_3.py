@@ -37,7 +37,8 @@ while True:
     corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(
         gray, aruco_dict, parameters=parameters)
     # sleep(0.2)
-    # frame_marker = cv2.aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    frame_marker = cv2.aruco.drawDetectedMarkers(img.copy(), corners, ids)
+    print(len(corners))
 
     jack = Robot(1)
     rose = Robot(2)
@@ -72,7 +73,8 @@ while True:
             data = b'0'
             sock.sendto(data, (jack_ip, jack_port))
         collision_flag = False
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    cv2.imshow("Video", frame_marker)
+    if cv2.waitKey(1) == ord('q'):
         break
 
 cap.release()
